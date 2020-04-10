@@ -15,6 +15,7 @@ import java.util.Vector;
 
 public class Function {
     public static JFrame func;
+    public static JTable table;
     private static Vector<String> dataTitle = new Vector<String>();//表格列名
     private static Vector<Vector<String>> data = new Vector<Vector<String>>();//表格单元格内容
     private static int selectedRow;
@@ -24,6 +25,8 @@ public class Function {
     static PrintStream ps = null;
     static TransServer ts = null;
     static TransClient tc = null;
+    static String filename = "";
+    static String addp = "";
 
     public Function(BufferedWriter bw, BufferedReader br, PrintStream ps) {
         this.bw = bw;
@@ -54,6 +57,7 @@ public class Function {
                             Refresh(da);
                         } else if (da[0].equals("301")) {
                             showCustomDialog(func, func, "声明成功");
+                            copyFile(addp, uname);
                         } else if (da[0].equals("302")) {
                             showCustomDialog(func, func, "声明失败");
                         } else if (da[0].equals("501")) {
@@ -84,6 +88,50 @@ public class Function {
         }.start();
     }
 
+    public static void copyFile(String srcpath, String uname) {
+        System.out.println(srcpath);
+        System.out.println(uname);
+        File src = new File(srcpath);
+        File dest = new File("D:\\" + uname + "\\" + filename);
+        // 定义文件输入流和输出流对象
+        FileInputStream fis = null;// 输入流
+        FileOutputStream fos = null;// 输出流
+
+        try {
+            fis = new FileInputStream(src);
+            fos = new FileOutputStream(dest);
+            byte[] bs = new byte[1024];
+            while (true) {
+                int len = fis.read(bs, 0, bs.length);
+                if (len == -1) {
+                    break;
+                } else {
+                    fos.write(bs, 0, len);
+                }
+            }
+            System.out.println("复制文件成功");
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            try {
+                fis.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static void placeComponents(JPanel panel) {
         JLabel sourcelist = new JLabel("资源列表");
         sourcelist.setBounds(10, 10, 120, 25);
@@ -100,10 +148,10 @@ public class Function {
                 return false;
             }
         };
-        JTable table = new JTable(newTableModel);
+        table = new JTable(newTableModel);
         Refresh();
-        table.updateUI();
-        data.removeAllElements();
+//        table.updateUI();
+//        data.removeAllElements();
 
         // 设置表格内容颜色
         table.setForeground(Color.BLACK);                   // 字体颜色
@@ -135,12 +183,12 @@ public class Function {
         openBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String addp = showFileOpenDialog(table, scrollPane);
+                addp = showFileOpenDialog(table, scrollPane);
                 if (addp != "") {
-                    String[] array = addp.split("\\\\");
-                    String pathway = array[array.length - 1];
+//                    String[] array = addp.split("\\\\");
+//                    String pathway = array[array.length - 1];
                     try {
-                        additem(pathway);
+                        additem(addp);
                     } catch (UnknownHostException ex) {
                         ex.printStackTrace();
                     } catch (IOException ex) {
@@ -152,7 +200,7 @@ public class Function {
                     }
                     Refresh();
                     table.updateUI();
-                    data.removeAllElements();
+//                    data.removeAllElements();
                 }
             }
         });
@@ -199,7 +247,8 @@ public class Function {
                 Refresh();
 
                 table.updateUI();
-                data.removeAllElements();
+//                data.removeAllElements();
+                showCustomDialog(func, func, "刷新成功");
             }
         });
         refreshBtn.setBounds(650, 200, 100, 25);
@@ -264,7 +313,7 @@ public class Function {
     public static void Refresh(String[] da) {
         if (da[0].equals("401")) {
             System.out.println("刷新成功");
-            showCustomDialog(func, func, "刷新成功");
+
         }
         for (int i = 1; i < da.length; i++) {
             Vector<String> Adi = new Vector<>();
@@ -274,6 +323,8 @@ public class Function {
             }
             data.add(Adi);
         }
+        table.updateUI();
+//        data.removeAllElements();
     }
 
     public static void getSource(String srcname, String sendName, String sendIP) throws Exception {
@@ -282,17 +333,19 @@ public class Function {
         ps.flush();
         ts = new TransServer(uname);
         int result = ts.load();
-        if (result == 1){
+        if (result == 1) {
             showCustomDialog(func, func, "文件获取成功");
         }
     }
 
     private static void additem(String args) throws IOException {
         String info = "";
+        String[] array = args.split("\\\\");
+        filename = array[array.length - 1];
 
         String ip = InetAddress.getLocalHost().getHostAddress();
         String srcid = MD5.md5Encryption(args);
-        info = uname + " " + args + " " + srcid + " " + ip;
+        info = uname + " " + filename + " " + srcid + " " + ip;
         ps.println("300 " + info);
         ps.flush();
     }
@@ -302,7 +355,7 @@ public class Function {
         ps.flush();
     }
 
-    private static void showCustomDialog(Frame owner, Component parentComponent, String info) {
+    public static void showCustomDialog(Frame owner, Component parentComponent, String info) {
         // 创建一个模态对话框
         final JDialog dialog = new JDialog(owner, "提示", true);
         // 设置对话框的宽高

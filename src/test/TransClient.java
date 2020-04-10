@@ -17,7 +17,7 @@ public class TransClient extends Socket {
     private static final int SERVER_PORT = 8888; // 服务端端口
     private String filename = "";
     private String usrname = "";
-    private String path = "D:\\Deluxe\\study\\computer networking\\socket\\yun";
+    private String path = "D:\\";
 
     private Socket client;
 
@@ -36,7 +36,7 @@ public class TransClient extends Socket {
         this.filename = filename;
         this.client = this;
         this.usrname = usrname;
-        System.out.println("Cliect[port:" + client.getLocalPort() + "] 成功连接服务端");
+        System.out.println("Client[port:" + client.getLocalPort() + "] 成功连接服务端");
     }
 
     /**
@@ -46,7 +46,8 @@ public class TransClient extends Socket {
      */
     public void sendFile() throws Exception {
         try {
-            File file = new File(path + "\\" + usrname + "\\" + filename);
+            File file = new File(path + usrname + "\\" + filename);
+            System.out.println(path + usrname + "\\" + filename);
             if (file.exists()) {
                 fis = new FileInputStream(file);
                 dos = new DataOutputStream(client.getOutputStream());

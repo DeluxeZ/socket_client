@@ -20,12 +20,13 @@ import java.text.DecimalFormat;
 public class TransServer extends ServerSocket {
 
     private static final int SERVER_PORT = 8888; // 服务端端口
-    private String path = "D:\\Deluxe\\study\\computer networking\\socket\\yun";
+    private String path = "D:\\";
     private String usrname = "";
 
     public TransServer(String usrname) throws IOException {
         super(SERVER_PORT);
         this.usrname = usrname;
+        System.out.println("正在等待建立连接。。。");
     }
 
     private static DecimalFormat df = null;
@@ -81,7 +82,8 @@ public class TransServer extends ServerSocket {
                 // 文件名和长度
                 String fileName = dis.readUTF();
                 long fileLength = dis.readLong();
-                File directory = new File(path + "\\" + usrname);
+                File directory = new File(path + usrname);
+//                System.out.println(path + "\\" + usrname);
                 if (!directory.exists()) {
                     directory.mkdir();
                 }

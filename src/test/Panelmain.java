@@ -150,11 +150,15 @@ public class Panelmain {
 
                 System.out.println(info);
                 if (info.equals("601")){
-                    System.out.println("注册成功");
+                    Function.showCustomDialog(frame,frame,"注册成功");
+                    File file = new File("D:\\" + uname);
+                    if (!file.exists()){
+                        file.mkdir();
+                    }
                 } else if(info.equals("603")) {
-                    System.out.println("拒绝注册");
+                    Function.showCustomDialog(frame,frame,"拒绝注册");
                 } else {
-                    System.out.println("已存在该设备");
+                    Function.showCustomDialog(frame,frame,"已存在该设备");
                 }
             }
         });
