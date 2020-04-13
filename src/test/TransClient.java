@@ -44,7 +44,7 @@ public class TransClient extends Socket {
      *
      * @throws Exception
      */
-    public void sendFile() throws Exception {
+    public int sendFile() throws Exception {
         try {
             File file = new File(path + usrname + "\\" + filename);
             System.out.println(path + usrname + "\\" + filename);
@@ -71,6 +71,11 @@ public class TransClient extends Socket {
                 }
                 System.out.println();
                 System.out.println("======== 文件传输成功 ========");
+
+                return 1;
+            } else {
+                System.out.println("======== 文件不存在 ========");
+                return 0;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,5 +86,6 @@ public class TransClient extends Socket {
                 dos.close();
             client.close();
         }
+        return 0;
     }
 }

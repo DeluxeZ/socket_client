@@ -78,7 +78,10 @@ public class Function {
                             String filename = da[2];
                             System.out.println(receiveIP + " " + filename);
                             tc = new TransClient(receiveIP, filename, uname);
-                            tc.sendFile();
+                            int re = tc.sendFile();
+                            if (re == 1) {
+                                showCustomDialog(func, func, "传输成功");
+                            }
                         }
                     }
                 } catch (Exception e) {
