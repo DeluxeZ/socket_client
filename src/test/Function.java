@@ -14,12 +14,12 @@ import java.net.UnknownHostException;
 import java.util.Vector;
 
 public class Function {
-    public static JFrame func;
-    public static JTable table;
+    public static JFrame func; //主要页面
+    public static JTable table; //资源信息显示表
     private static Vector<String> dataTitle = new Vector<String>();//表格列名
     private static Vector<Vector<String>> data = new Vector<Vector<String>>();//表格单元格内容
-    private static int selectedRow;
-    private static String uname;
+    private static int selectedRow; //选中的资源列
+    private static String uname; //设备名
     static BufferedWriter bw = null;
     static BufferedReader br = null;
     static PrintStream ps = null;
@@ -28,6 +28,7 @@ public class Function {
     static String filename = "";
     static String addp = "";
 
+    //构造函数
     public Function(BufferedWriter bw, BufferedReader br, PrintStream ps) {
         this.bw = bw;
         this.br = br;
@@ -44,15 +45,20 @@ public class Function {
         func.add(panel);
         placeComponents(panel);
         func.setVisible(true);
+
+        //创建一个线程来监听服务端发来的信息
         new Thread() {
             @Override
             public void run() {
                 super.run();
                 String info;
                 try {
+                    //循环监听所有消息
                     while ((info = br.readLine()) != null) {
                         System.out.println(info);
+                        // 将后端传回来的字符串分割
                         String[] da = info.split("/");
+                        //根据传回来不同的标志位信息选择不同的执行体
                         if (da[0].equals("401")) {
                             Refresh(da);
                         } else if (da[0].equals("301")) {
@@ -91,9 +97,10 @@ public class Function {
         }.start();
     }
 
+    //复制文件函数，用于申明资源的时候将文件复制到共享资源文件夹中
     public static void copyFile(String srcpath, String uname) {
-        System.out.println(srcpath);
-        System.out.println(uname);
+        // System.out.println(srcpath);
+        // System.out.println(uname);
         File src = new File(srcpath);
         File dest = new File("D:\\" + uname + "\\" + filename);
         // 定义文件输入流和输出流对象
@@ -135,6 +142,7 @@ public class Function {
         }
     }
 
+    //创建gui主体部分，即定义每一个按键的函数
     private static void placeComponents(JPanel panel) {
         JLabel sourcelist = new JLabel("资源列表");
         sourcelist.setBounds(10, 10, 120, 25);
@@ -210,6 +218,8 @@ public class Function {
         openBtn.setBounds(650, 100, 100, 25);
         panel.add(openBtn);
 
+
+        //创建请求资源按键及绑定响应函数
         JButton loadBtn = new JButton("请求资源");
         ListSelectionModel selectionModel = table.getSelectionModel();
         int selectionMode = ListSelectionModel.SINGLE_SELECTION;
@@ -239,6 +249,7 @@ public class Function {
         loadBtn.setBounds(650, 150, 100, 25);
         panel.add(loadBtn);
 
+        //创建刷新列表按键并绑定响应函数
         JButton refreshBtn = new JButton("刷新列表");
         refreshBtn.addActionListener(new ActionListener() {
             @Override
@@ -257,6 +268,7 @@ public class Function {
         refreshBtn.setBounds(650, 200, 100, 25);
         panel.add(refreshBtn);
 
+        //创建登出按键并绑定响应函数
         JButton outBtn = new JButton("登出");
         outBtn.addActionListener(new ActionListener() {
             @Override
@@ -271,11 +283,13 @@ public class Function {
         outBtn.setBounds(650, 250, 100, 25);
         panel.add(outBtn);
 
+        //背景图片
         JLabel gra = new JLabel(new ImageIcon("img/cloud2.png"));
         panel.add(gra);
         gra.setBounds(650, 300, 100, 100);
     }
 
+    //文件选择器，用于申明资源选择时选择文件
     private static String showFileOpenDialog(Component parent, JScrollPane msgTextArea) {
         // 创建一个默认的文件选取器
         JFileChooser fileChooser = new JFileChooser();
@@ -308,16 +322,21 @@ public class Function {
         return path;
     }
 
+    //刷新列表的函数，调用此函数将向服务器发送刷新请求
     private static void Refresh() {
         ps.println("400 " + uname);
         ps.flush();
     }
 
+
+    //处理发送刷新列表请求之后服务端返回的数据
     public static void Refresh(String[] da) {
         if (da[0].equals("401")) {
             System.out.println("刷新成功");
 
         }
+
+        //将所有资源信息加载到表格中
         for (int i = 1; i < da.length; i++) {
             Vector<String> Adi = new Vector<>();
             String[] da1 = da[i].split(",");
@@ -330,6 +349,7 @@ public class Function {
 //        data.removeAllElements();
     }
 
+    //请求资源函数
     public static void getSource(String srcname, String sendName, String sendIP) throws Exception {
         String receiveIP = InetAddress.getLocalHost().getHostAddress();
         ps.println("200 " + uname + " " + srcname + " " + sendName + " " + sendIP + " " + receiveIP);
@@ -341,6 +361,7 @@ public class Function {
         }
     }
 
+    //申明资源函数
     private static void additem(String args) throws IOException {
         String info = "";
         String[] array = args.split("\\\\");
@@ -353,11 +374,14 @@ public class Function {
         ps.flush();
     }
 
+    //登出函数
     private static void leave(String args) throws IOException {
         ps.println("500 " + args);
         ps.flush();
     }
 
+
+    //提示信息框函数
     public static void showCustomDialog(Frame owner, Component parentComponent, String info) {
         // 创建一个模态对话框
         final JDialog dialog = new JDialog(owner, "提示", true);

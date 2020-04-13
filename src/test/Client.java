@@ -5,11 +5,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class Client {
-    public static String regisinfo;
-    static BufferedWriter bw = null;
+    public static String regisinfo; //登录验证信息
+    static BufferedWriter bw = null; 
     static BufferedReader br = null;
     static PrintStream ps = null;
 
+    //Client构造函数
     public Client(BufferedWriter bw, BufferedReader br, PrintStream ps) {
         this.bw = bw;
         this.br = br;
@@ -33,12 +34,6 @@ public class Client {
                 System.out.println("我是客户端，服务器说:" + regisinfo);
                 backinfo = regisinfo;
             }
-
-            //4.关闭资源
-//            bw.close();
-//            pw.close();
-//            os.close();
-//            so.close();
 
         } catch (java.io.IOException e) {
             System.out.println("无法连接 ");

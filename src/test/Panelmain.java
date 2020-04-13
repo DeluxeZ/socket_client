@@ -8,10 +8,11 @@ import java.io.*;
 import java.net.Socket;
 
 public class Panelmain {
-    public static int regisinfo;
-    public static JFrame frame;
+    public static int regisinfo; //登录验证信息
+    public static JFrame frame; //登陆界面
     private static String back;
 
+    //创建连接服务端的Socket
     private static Socket so;
 
     static {
@@ -22,6 +23,7 @@ public class Panelmain {
         }
     }
 
+    //通过Socket的输入输出流
     static OutputStream os;
     static InputStream is;
 
@@ -36,7 +38,6 @@ public class Panelmain {
 
 
     static PrintStream ps;
-
     static {
         try {
             ps = new PrintStream(new BufferedOutputStream(so.getOutputStream()));
@@ -47,8 +48,8 @@ public class Panelmain {
 
     static PrintWriter pw = new PrintWriter(os);//字符输出流
     static BufferedWriter bw = new BufferedWriter(pw);//加上缓冲流
-    static InputStreamReader isr = new InputStreamReader(is);
-    static BufferedReader br = new BufferedReader(isr);
+    static InputStreamReader isr = new InputStreamReader(is);//字符读入流
+    static BufferedReader br = new BufferedReader(isr);//缓冲流
 
     public static void main(String[] args) {
         // 创建 JFrame 实例
@@ -111,8 +112,11 @@ public class Panelmain {
                 String uname = userText.getText();
                 String pword = passwordText.getText();
 
+                //使用Client验证登录信息是否正确
                 Client cli = new Client(bw, br, ps);
                 back = cli.main(uname, pword);
+
+                //登录信息正确，则进入下一个页面
                 if (back.equals("101")) {
                     showCustomDialog(frame, frame);
                     frame.dispose();
@@ -129,6 +133,7 @@ public class Panelmain {
         });
         panel.add(loginButton);
 
+        // 创建注册按键
         JButton signUpButton = new JButton("注册");
         signUpButton.setBounds(240, 110, 80, 25);
         signUpButton.addActionListener(new ActionListener() {
@@ -137,9 +142,11 @@ public class Panelmain {
                 String uname = userText.getText();
                 String pword = passwordText.getText();
 
+                //发送注册信息到服务端
                 ps.println("600 " + uname + " " + pword);
                 ps.flush();
 
+                //接收服务端发来的信息
                 String info = "";
                 try {
                     info = br.readLine();
@@ -148,10 +155,10 @@ public class Panelmain {
                     ex.printStackTrace();
                 }
 
-                System.out.println(info);
+                // System.out.println(info);
                 if (info.equals("601")){
                     Function.showCustomDialog(frame,frame,"注册成功");
-                    File file = new File("D:\\" + uname);
+                    File file = new File("D:\\" + uname); //注册成功后建立资源共享文件夹
                     if (!file.exists()){
                         file.mkdir();
                     }
@@ -165,6 +172,8 @@ public class Panelmain {
         panel.add(signUpButton);
     }
 
+
+    // 创建提示信息框函数
     private static void showCustomDialog(Frame owner, Component parentComponent) {
         // 创建一个模态对话框
         final JDialog dialog = new JDialog(owner, "提示", true);
